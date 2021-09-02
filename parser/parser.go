@@ -1,6 +1,7 @@
-package main
+package parser
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -85,10 +86,11 @@ func (p *Parser) parenthesize(tokens []string, curr *List) (*List, error) {
 		return p.parenthesize(tokens, curr)
 	} else {
 		if isNumber(t) {
-			curr.value = append(curr.value, &Node{Type: NodeType_Number, Value: t})
+			num, _ := strconv.Atoi(t)
+			curr.value = append(curr.value, &Node{Type: NodeType_Number, Value: num})
 			return p.parenthesize(tokens, curr)
 		} else if isString(t) {
-			curr.value = append(curr.value, &Node{Type: NodeType_String, Value: t})
+			curr.value = append(curr.value, &Node{Type: NodeType_String, Value: t[1:len(t)-1]})
 			return p.parenthesize(tokens, curr)
 		} else {
 			curr.value = append(curr.value, &Node{Type: NodeType_Atom, Value: t})
@@ -100,9 +102,10 @@ func (p *Parser) parenthesize(tokens []string, curr *List) (*List, error) {
 func (p *Parser) Parse() (*Node, error) {
 	if p.code[0] != '(' && p.code[len(p.code)-1]!=')' {
 		if isNumber(p.code) {
-			return &Node{Type: NodeType_Number, Value: p.code}, nil
+			num, _ := strconv.Atoi(p.code)
+			return &Node{Type: NodeType_Number, Value: num}, nil
 		} else if isString(p.code) {
-			return &Node{Type: NodeType_String, Value: p.code}, nil
+			return &Node{Type: NodeType_String, Value: p.code[1:len(p.code)-1]}, nil
 		} else {
 			return &Node{Type: NodeType_Atom, Value: p.code}, nil
 		}
