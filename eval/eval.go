@@ -7,11 +7,11 @@ import (
 )
 
 type SymbolTable struct {
-	data map[string]*Value
+	Data map[string]*Value
 }
 
 func (s *SymbolTable) Get(key string) (*Value, error) {
-	val, exists := s.data[key]
+	val, exists := s.Data[key]
 	if !exists {
 		return nil, fmt.Errorf("not exists")
 	}
@@ -34,7 +34,7 @@ type Value struct {
 }
 
 type Function struct {
-	Callable func(map[string]*Value) *Value
+	Callable func(map[string]interface{}) *Value
 	Args     []string
 }
 
@@ -75,9 +75,9 @@ func Eval(node *parser.Node, st *SymbolTable) (*Value, error) {
 		return nil, err
 	}
 	fnFn := fnVal.Value.(*Function)
-	argsMap := map[string]*Value{}
+	argsMap := map[string]interface{}{}
 	for idx, arg := range fnFn.Args {
-		argsMap[arg] = argsEvaluated[idx]
+		argsMap[arg] = argsEvaluated[idx].Value
 	}
 	return fnFn.Callable(argsMap), nil
 }
