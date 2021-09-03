@@ -17,15 +17,15 @@ type Node struct {
 }
 
 type List struct {
-	value []*Node
+	Value []*Node
 }
 
 func (l *List) Car() *Node {
-	return l.value[0]
+	return l.Value[0]
 }
 
 func (l *List) Cdr() []*Node {
-	return l.value[1:]
+	return l.Value[1:]
 }
 
 type Number struct {

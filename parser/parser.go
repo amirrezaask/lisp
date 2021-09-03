@@ -6,17 +6,17 @@ import (
 )
 
 type Parser struct {
-	code string
+	Code string
 }
 
 func (p *Parser) tokenize() []string {
-	p.code = strings.Replace(p.code, "(", " ( ", -1)
-	p.code = strings.Replace(p.code, ")", " ) ", -1)
-	p.code = strings.Replace(p.code, "{", " { ", -1)
-	p.code = strings.Replace(p.code, "}", " } ", -1)
-	p.code = strings.Replace(p.code, "[", " [ ", -1)
-	p.code = strings.Replace(p.code, "]", " ] ", -1)
-	return strings.Split(p.code, " ")
+	p.Code = strings.Replace(p.Code, "(", " ( ", -1)
+	p.Code = strings.Replace(p.Code, ")", " ) ", -1)
+	p.Code = strings.Replace(p.Code, "{", " { ", -1)
+	p.Code = strings.Replace(p.Code, "}", " } ", -1)
+	p.Code = strings.Replace(p.Code, "[", " [ ", -1)
+	p.Code = strings.Replace(p.Code, "]", " ] ", -1)
+	return strings.Split(p.Code, " ")
 }
 
 func (p *Parser) removeWhiteSpaces(tokens []string) []string {
@@ -80,34 +80,34 @@ func (p *Parser) parenthesize(tokens []string, curr *List) (*List, error) {
 		if err != nil {
 			return nil, err
 		}
-		curr.value = append(curr.value, &Node{Type: NodeType_List, Value: newL})
+		curr.Value = append(curr.Value, &Node{Type: NodeType_List, Value: newL})
 		return p.parenthesize(tokens, curr)
 	} else if t == ")" {
 		return p.parenthesize(tokens, curr)
 	} else {
 		if isNumber(t) {
 			num, _ := strconv.Atoi(t)
-			curr.value = append(curr.value, &Node{Type: NodeType_Number, Value: num})
+			curr.Value = append(curr.Value, &Node{Type: NodeType_Number, Value: num})
 			return p.parenthesize(tokens, curr)
 		} else if isString(t) {
-			curr.value = append(curr.value, &Node{Type: NodeType_String, Value: t[1:len(t)-1]})
+			curr.Value = append(curr.Value, &Node{Type: NodeType_String, Value: t[1 : len(t)-1]})
 			return p.parenthesize(tokens, curr)
 		} else {
-			curr.value = append(curr.value, &Node{Type: NodeType_Atom, Value: t})
+			curr.Value = append(curr.Value, &Node{Type: NodeType_Atom, Value: t})
 			return p.parenthesize(tokens, curr)
 		}
 	}
 }
 
 func (p *Parser) Parse() (*Node, error) {
-	if p.code[0] != '(' && p.code[len(p.code)-1]!=')' {
-		if isNumber(p.code) {
-			num, _ := strconv.Atoi(p.code)
+	if p.Code[0] != '(' && p.Code[len(p.Code)-1] != ')' {
+		if isNumber(p.Code) {
+			num, _ := strconv.Atoi(p.Code)
 			return &Node{Type: NodeType_Number, Value: num}, nil
-		} else if isString(p.code) {
-			return &Node{Type: NodeType_String, Value: p.code[1:len(p.code)-1]}, nil
+		} else if isString(p.Code) {
+			return &Node{Type: NodeType_String, Value: p.Code[1 : len(p.Code)-1]}, nil
 		} else {
-			return &Node{Type: NodeType_Atom, Value: p.code}, nil
+			return &Node{Type: NodeType_Atom, Value: p.Code}, nil
 		}
 	} else {
 		tokens := p.tokenize()
