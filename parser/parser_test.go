@@ -27,15 +27,12 @@ func TestParser(t *testing.T) {
 		}, n)
 	})
 
-	//t.Run("mixed numbers and strings", func(t *testing.T) {
-	//	p := &Parser{code: `12121"Amirreza"`}
-	//	n, err := p.Parse()
-	//	assert.Error(t, err)
-	//	assert.Equal(t, &Node{
-	//		Type:  NodeType_String,
-	//		Value: "Amirreza",
-	//	}, n)
-	//})
+	t.Run("mixed numbers and strings", func(t *testing.T) {
+		p := &Parser{Code: `12121"Amirreza"`}
+		n, err := p.Parse()
+		assert.Error(t, err)
+		assert.Nil(t, n)
+	})
 
 	t.Run("lists", func(t *testing.T) {
 		p := &Parser{Code: `("a" 1)`}

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -29,26 +30,6 @@ func (p *Parser) removeWhiteSpaces(tokens []string) []string {
 	return ts
 }
 
-/*
-    1   var parenthesize = function(input, list) {
-2     if (list === undefined) {
-3       return parenthesize(input, []);
-4     } else {
-5       var token = input.shift();
-6       if (token === undefined) {
-7         return list.pop();
-8       } else if (token === "(") {
-9         list.push(parenthesize(input, []));
-10        return parenthesize(input, list);
-11      } else if (token === ")") {
-12        return list;
-13      } else {
-14        return parenthesize(input, list.concat(categorize(token)));
-15      }
-16    }
-17  };
-*/
-
 func pop(list *[]string) string {
 	poped := (*list)[0]
 	*list = (*list)[1:]
@@ -66,7 +47,9 @@ func isNumber(t string) bool {
 func isString(t string) bool {
 	return (t[0] == '"' && t[len(t)-1] == '"') || (t[0] == '\'' && t[len(t)-1] == '\'')
 }
-
+func isAtom(t string) bool {
+	return !(t[0] >= '0' && t[0] <= '9')
+}
 func (p *Parser) parenthesize(tokens []string, curr *List) (*List, error) {
 	if len(tokens) == 0 {
 		return curr, nil
@@ -106,8 +89,10 @@ func (p *Parser) Parse() (*Node, error) {
 			return &Node{Type: NodeType_Number, Value: num}, nil
 		} else if isString(p.Code) {
 			return &Node{Type: NodeType_String, Value: p.Code[1 : len(p.Code)-1]}, nil
-		} else {
+		} else if isAtom(p.Code) {
 			return &Node{Type: NodeType_Atom, Value: p.Code}, nil
+		} else {
+			return nil, fmt.Errorf("code is malformed")
 		}
 	} else {
 		tokens := p.tokenize()
