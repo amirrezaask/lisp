@@ -39,11 +39,11 @@ type Function struct {
 }
 
 func returnNodeValue(node *parser.Node) (*Value, error) {
-	if node.Type == parser.NodeType_Atom {
+	if node.Type == parser.NodeTypeAtom {
 		return &Value{Type: ValueType_Atom, Value: node.Value}, nil
-	} else if node.Type == parser.NodeType_Number {
+	} else if node.Type == parser.NodeTypeNumber {
 		return &Value{Type: ValueType_Number, Value: node.Value}, nil
-	} else if node.Type == parser.NodeType_String {
+	} else if node.Type == parser.NodeTypeString {
 		return &Value{Type: ValueType_String, Value: node.Value}, nil
 	} else {
 		return nil, fmt.Errorf("not supported type for evaluation: %s", node.Type)
@@ -52,7 +52,7 @@ func returnNodeValue(node *parser.Node) (*Value, error) {
 }
 
 func Eval(node *parser.Node, st *SymbolTable) (*Value, error) {
-	if node.Type != parser.NodeType_List {
+	if node.Type != parser.NodeTypeList {
 		return returnNodeValue(node)
 	}
 	list := node.Value.(*parser.List).Value
@@ -67,7 +67,7 @@ func Eval(node *parser.Node, st *SymbolTable) (*Value, error) {
 		argsEvaluated = append(argsEvaluated, val)
 	}
 	//fn should be atom
-	if fn.Type != parser.NodeType_Atom {
+	if fn.Type != parser.NodeTypeAtom {
 		return nil, fmt.Errorf("function name should be of type atom")
 	}
 	fnVal, err := st.Get(fn.Value.(string))

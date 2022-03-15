@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-type Parser struct {
+type parser struct {
 	Code string
 }
 
-func (p *Parser) tokenize() []string {
+func (p *parser) tokenize() []string {
 	p.Code = strings.Replace(p.Code, "(", " ( ", -1)
 	p.Code = strings.Replace(p.Code, ")", " ) ", -1)
 	p.Code = strings.Replace(p.Code, "{", " { ", -1)
@@ -20,7 +20,7 @@ func (p *Parser) tokenize() []string {
 	return strings.Split(p.Code, " ")
 }
 
-func (p *Parser) removeWhiteSpaces(tokens []string) []string {
+func (p *parser) removeWhiteSpaces(tokens []string) []string {
 	ts := []string{}
 	for _, t := range tokens {
 		if t != "" && t != "\n" {
@@ -50,7 +50,7 @@ func isString(t string) bool {
 func isAtom(t string) bool {
 	return !(t[0] >= '0' && t[0] <= '9')
 }
-func (p *Parser) parenthesize(tokens []string, curr *List) (*List, error) {
+func (p *parser) parenthesize(tokens []string, curr *List) (*List, error) {
 	if len(tokens) == 0 {
 		return curr, nil
 	}
@@ -63,34 +63,34 @@ func (p *Parser) parenthesize(tokens []string, curr *List) (*List, error) {
 		if err != nil {
 			return nil, err
 		}
-		curr.Value = append(curr.Value, &Node{Type: NodeType_List, Value: newL})
+		curr.Value = append(curr.Value, &Node{Type: NodeTypeList, Value: newL})
 		return p.parenthesize(tokens, curr)
 	} else if t == ")" {
 		return p.parenthesize(tokens, curr)
 	} else {
 		if isNumber(t) {
 			num, _ := strconv.Atoi(t)
-			curr.Value = append(curr.Value, &Node{Type: NodeType_Number, Value: num})
+			curr.Value = append(curr.Value, &Node{Type: NodeTypeNumber, Value: num})
 			return p.parenthesize(tokens, curr)
 		} else if isString(t) {
-			curr.Value = append(curr.Value, &Node{Type: NodeType_String, Value: t[1 : len(t)-1]})
+			curr.Value = append(curr.Value, &Node{Type: NodeTypeString, Value: t[1 : len(t)-1]})
 			return p.parenthesize(tokens, curr)
 		} else {
-			curr.Value = append(curr.Value, &Node{Type: NodeType_Atom, Value: t})
+			curr.Value = append(curr.Value, &Node{Type: NodeTypeAtom, Value: t})
 			return p.parenthesize(tokens, curr)
 		}
 	}
 }
 
-func (p *Parser) Parse() (*Node, error) {
+func (p *parser) parse() (*Node, error) {
 	if p.Code[0] != '(' && p.Code[len(p.Code)-1] != ')' {
 		if isNumber(p.Code) {
 			num, _ := strconv.Atoi(p.Code)
-			return &Node{Type: NodeType_Number, Value: num}, nil
+			return &Node{Type: NodeTypeNumber, Value: num}, nil
 		} else if isString(p.Code) {
-			return &Node{Type: NodeType_String, Value: p.Code[1 : len(p.Code)-1]}, nil
+			return &Node{Type: NodeTypeString, Value: p.Code[1 : len(p.Code)-1]}, nil
 		} else if isAtom(p.Code) {
-			return &Node{Type: NodeType_Atom, Value: p.Code}, nil
+			return &Node{Type: NodeTypeAtom, Value: p.Code}, nil
 		} else {
 			return nil, fmt.Errorf("code is malformed")
 		}
@@ -98,7 +98,11 @@ func (p *Parser) Parse() (*Node, error) {
 		tokens := p.tokenize()
 		tokens = p.removeWhiteSpaces(tokens)
 		list, err := p.parenthesize(tokens, nil)
-		return &Node{Type: NodeType_List, Value: list}, err
+		return &Node{Type: NodeTypeList, Value: list}, err
 	}
 
+}
+
+func Parse(code string) (*Node, error) {
+	return (&parser{Code: code}).parse()
 }

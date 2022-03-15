@@ -3,12 +3,12 @@ package parser
 type NodeType string
 
 const (
-	NodeType_Number = "number"
-	NodeType_String = "string"
-	NodeType_Map    = "map"
-	NodeType_List   = "list"
-	NodeType_Nil    = "nil"
-	NodeType_Atom   = "atom"
+	NodeTypeNumber = "number"
+	NodeTypeString = "string"
+	NodeTypeMap    = "map"
+	NodeTypeList   = "list"
+	NodeTypeNil    = "nil"
+	NodeTypeAtom   = "atom"
 )
 
 type Node struct {
